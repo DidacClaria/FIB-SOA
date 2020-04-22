@@ -14,6 +14,10 @@ int write(int fd, char *buffer, int size);
 
 void itoa(int a, char *b);
 
+int get_key(char *c);
+
+int put_screen(char *s);
+
 int strlen(char *a);
 
 void perror();

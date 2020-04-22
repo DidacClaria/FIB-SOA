@@ -236,3 +236,12 @@ int sys_get_stats(int pid, struct stats *st)
   }
   return -ESRCH; /*ESRCH */
 }
+
+int sys_get_key(char *c){
+  return -1;
+}
+
+int sys_put_screen(char *s){
+  return -1;
+}
+

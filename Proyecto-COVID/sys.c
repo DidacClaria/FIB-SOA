@@ -245,3 +245,7 @@ int sys_put_screen(char *s){
   return -1;
 }
 
+int sys_sbrk(int x){
+  return -1;
+}
+

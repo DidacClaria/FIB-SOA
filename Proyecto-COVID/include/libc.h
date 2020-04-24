@@ -18,6 +18,8 @@ int get_key(char *c);
 
 int put_screen(char *s);
 
+int malloc(int x);
+
 int strlen(char *a);
 
 void perror();

@@ -127,3 +127,17 @@ ENTRY(put_screen)
 	js nok	// if (eax < 0) -> 
 	popl %ebp
 	ret
+
+/* int malloc(int x) */
+ENTRY(malloc)
+	pushl %ebp
+	movl %esp, %ebp
+	pushl %ebx;  // Save EBX, ESI and EDI if modified
+	movl $45, %eax
+	movl 0x8(%ebp), %ebx;	//x
+	call syscall_sysenter
+	popl %ebx
+	test %eax, %eax
+	js nok	// if (eax < 0) -> 
+	popl %ebp
+	ret

@@ -47,5 +47,6 @@ ENTRY (sys_call_table)
 	.long sys_ni_syscall	//42
 	.long sys_ni_syscall	//43
 	.long sys_ni_syscall	//44
+	.long sys_sbrk			//45
 .globl MAX_SYSCALL
 MAX_SYSCALL = (. - sys_call_table)/4

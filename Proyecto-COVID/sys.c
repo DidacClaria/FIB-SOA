@@ -245,7 +245,11 @@ int sys_put_screen(char *s){
   return -1;
 }
 
-int sys_sbrk(int x){
-  return -1;
+void * sys_sbrk(int incr){
+  //incrementa la zona de memoria dinamica (heap)
+  //en incr bytes, reservando esta cantidad en sistema
+  //si el incremento es negativo libera esa cantidada (espacio de direcciones se modifica)
+  //devuelve la direccion de memoria a usar
+  return;
 }
 

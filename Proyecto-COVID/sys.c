@@ -239,6 +239,7 @@ int sys_get_stats(int pid, struct stats *st)
   return -ESRCH; /*ESRCH */
 }
 
+extern struct ring_buffer* keyboard_ring_buffer;
 int sys_get_key(char *c){
 	*c = ring_buffer_pop(keyboard_ring_buffer);
   return *c == '\0';

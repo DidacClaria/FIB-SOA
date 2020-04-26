@@ -22,6 +22,8 @@
 
 void * get_ebp();
 
+char screen[25][80];
+
 int check_fd(int fd, int permissions)
 {
   if (fd!=1) return -EBADF; 
@@ -242,7 +244,10 @@ int sys_get_key(char *c){
 }
 
 int sys_put_screen(char *s){
-  return -1;
+	for (int i = 0; i < 25; ++i)
+		for (int j = 0; j < 80; ++j)
+			printc_xy(i, j, screen[i][j]);
+  return 0;
 }
 
 void * sys_sbrk(int incr){

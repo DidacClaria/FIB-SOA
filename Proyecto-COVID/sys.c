@@ -17,6 +17,8 @@
 
 #include <errno.h>
 
+#include <ring_buffer.h>
+
 #define LECTURA 0
 #define ESCRIPTURA 1
 

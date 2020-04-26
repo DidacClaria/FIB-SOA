@@ -240,7 +240,8 @@ int sys_get_stats(int pid, struct stats *st)
 }
 
 int sys_get_key(char *c){
-  return -1;
+	*c = ring_buffer_pop(keyboard_ring_buffer);
+  return *c == '\0';
 }
 
 int sys_put_screen(char *s){

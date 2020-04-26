@@ -22,7 +22,7 @@ void ring_buffer_push_debug(struct ring_buffer* rb, char c) {
 
 char ring_buffer_pop(struct ring_buffer* rb) {
 	if (rb->size == 0)
-		return ' ';
+		return '\0';
 	rb->size = rb->size - 1;
 	rb->tail = (rb->tail + 1) % 4084;
 	if (rb->tail == 0)

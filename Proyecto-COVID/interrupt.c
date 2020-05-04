@@ -6,9 +6,8 @@
 #include <segment.h>
 #include <hardware.h>
 #include <io.h>
-
 #include <sched.h>
-
+#include <ring_buffer.h>
 #include <zeos_interrupt.h>
 
 Gate idt[IDT_ENTRIES];
@@ -33,7 +32,7 @@ char char_map[] =
 
 int zeos_ticks = 0;
 
-struct ring_buffer* keyboard_ring_buffer;
+struct ring_buffer keyboard_ring_buffer;
 
 void clock_routine()
 {
@@ -45,7 +44,8 @@ void clock_routine()
 
 void keyboard_routine()
 {
-  ring_buffer_push(keyboard_ring_buffer, inb(0x60));
+  unsigned char c = inb(0x60);
+  if (c&0x80) ring_buffer_push(&keyboard_ring_buffer, char_map[c&0x7F]);
 }
 
 void setInterruptHandler(int vector, void (*handler)(), int maxAccessibleFromPL)

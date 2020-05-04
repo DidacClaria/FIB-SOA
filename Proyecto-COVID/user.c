@@ -11,12 +11,16 @@ int posx=0, posy=1;
 int __attribute__ ((__section__(".text.main")))
   main(void)
 {
+	char *empty;
 	//sys_get_key tests
+	get_key(empty); //si no comprovamos que le pasamos un puntero inicializado daria un page fault
+	get_key(empty);
+	get_key(empty); //aunque se pidan más teclas que las que pueda haber en el ring buffer,
+					//sigue funcionando y simplemente lo ignora
 
 	//sys_put_screen tests
-	char *empty;
-	put_screen(empty);
-	
+	put_screen(empty); //si no hubiera el control de paràmetros daria un page fault 
+
 	char tablero[80][25]={{' '}};
 	while(1) { 
 		tablero[posx][posy]=' ';

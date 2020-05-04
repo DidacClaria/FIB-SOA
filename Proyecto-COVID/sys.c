@@ -241,12 +241,13 @@ int sys_get_stats(int pid, struct stats *st)
 
 extern struct ring_buffer keyboard_ring_buffer;
 int sys_get_key(char* c){
+  if (!access_ok(VERIFY_READ, c, 1)) return -EFAULT;
 	*c = ring_buffer_pop(&keyboard_ring_buffer);
   return *c == '\0';
 }
 
 int sys_put_screen(char *s){
-  if (s==NULL) return -1;
+  if (!access_ok(VERIFY_READ, s, 5)) return -EFAULT;
 	for (int i = 0; i < 80; ++i)
 		for (int j = 0; j < 25; ++j)
 			printc_xy(i, j, s[i*25+j]);

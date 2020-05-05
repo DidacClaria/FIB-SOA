@@ -261,10 +261,9 @@ void* sys_sbrk(int incr){
 
   struct task_struct* process=current();
   void* heap_ptr=(void*)process->register_esp;
-  if (heap_ptr+incr<1024){
-    void *base=heap_ptr;
+  if ((int)heap_ptr+incr<1024){
     current()->register_esp+=incr;
-    return base;
+    return heap_ptr;
   }
   return (void*)-ENOMEM; 
   

@@ -48,10 +48,10 @@ int __attribute__ ((__section__(".text.main")))
 {
 	write(1,"Syscalls checking:",strlen("Syscalls checking:"));
 	char empty;
-	int i;
+
 	//sys_get_key TESTS
-	i=get_key(&empty); //si no hay ningun elemento en el ring buffer devuelve un error (error=1|not error=0)
-	itoa(i,buff);
+	get_key(&empty); //si no hay ningun elemento en el ring buffer devuelve un error
+	itoa(errno,buff);
 	write(1,"\nget_key checking:",strlen("\nget_key checking:"));
 	write(1,buff,strlen(buff));
 

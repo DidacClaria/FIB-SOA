@@ -243,7 +243,8 @@ extern struct ring_buffer keyboard_ring_buffer;
 int sys_get_key(char* c){
   if (!access_ok(VERIFY_WRITE, c, sizeof(char))) return -EFAULT;
 	*c = ring_buffer_pop(&keyboard_ring_buffer);
-  return *c=='\0';
+  if (*c=='\0') return -ENOKEY;
+  return 0;
 }
 
 int sys_put_screen(char *s){
@@ -259,6 +260,7 @@ void * sys_sbrk(int incr){
   //en incr bytes, reservando esta cantidad en sistema
   //si el incremento es negativo libera esa cantidada (espacio de direcciones se modifica)
   //devuelve la direccion de memoria a usar
+  //ERRORES: EAGAIN, ENOMEM
   return NULL;
 }
 

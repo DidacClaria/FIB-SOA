@@ -36,7 +36,7 @@ struct ring_buffer keyboard_ring_buffer;
 
 void clock_routine()
 {
-  zeos_show_clock();
+  // zeos_show_clock();
   zeos_ticks ++;
 
   schedule();

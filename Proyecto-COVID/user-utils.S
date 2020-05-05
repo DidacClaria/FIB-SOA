@@ -128,7 +128,7 @@ ENTRY(put_screen)
 	popl %ebp
 	ret
 
-/* int malloc(int x) */
+/* void* malloc(int x) */
 ENTRY(malloc)
 	pushl %ebp
 	movl %esp, %ebp

@@ -18,7 +18,7 @@ int get_key(char *c);
 
 int put_screen(char *s);
 
-int malloc(int x);
+void* malloc(int x);
 
 int strlen(char *a);
 

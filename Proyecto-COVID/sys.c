@@ -248,19 +248,25 @@ int sys_get_key(char* c){
 }
 
 int sys_put_screen(char *s){
-  if (!access_ok(VERIFY_READ, s, 5)) return -EFAULT;
-	for (int i = 0; i < 80; ++i)
-		for (int j = 0; j < 25; ++j)
+  if (!access_ok(VERIFY_READ, s, 25*80)) return -EFAULT;
+	for (int i = 0; i < 80; ++i){
+		for (int j = 0; j < 25; ++j){
 			printc_xy(i, j, s[i*25+j]);
+    }
+  }
   return 0;
 }
 
-void * sys_sbrk(int incr){
+void* sys_sbrk(int incr){
   //incrementa la zona de memoria dinamica (heap)
   //en incr bytes, reservando esta cantidad en sistema
   //si el incremento es negativo libera esa cantidada (espacio de direcciones se modifica)
   //devuelve la direccion de memoria a usar
   //ERRORES: EAGAIN, ENOMEM
-  return NULL;
+  // if (incr==0) return (void*) brkp;
+  // void* free = (void*) brkp;
+  // brkp+=incr;
+  // if (incr>=endp) return NULL;
+  // return free;
 }
 

@@ -54,13 +54,19 @@ int __attribute__ ((__section__(".text.main")))
 	itoa(errno,buff);
 	write(1,"\nget_key checking:",strlen("\nget_key checking:"));
 	write(1,buff,strlen(buff));
+	write(1,"//",strlen("//"));
 
 	get_key(empty); //si no hubiera control de escritura en el parametro, saltaria un page fault,
-					//como si que lo hay simplemente lo ignora
+	itoa(errno,buff); //como si que lo hay simplemente lo ignora
+	write(1,buff,strlen(buff));
 
 	//sys_put_screen TESTS
 	put_screen(empty); //si no hubiera control de lectura en el parametro, saltaria un page fault,
-					   //como si que lo hay simplemente lo ignora
+	itoa(errno,buff); //como si que lo hay simplemente lo ignora
+	write(1,"\nput_screen checking:",strlen("\nput_screen checking:"));
+	write(1,buff,strlen(buff));
+
+	//START GAME:
 
 	char tablero[80][25]={{' '}};
 	creartablero(tablero);

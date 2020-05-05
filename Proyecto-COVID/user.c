@@ -51,8 +51,8 @@ int __attribute__ ((__section__(".text.main")))
 
 	//sys_get_key TESTS
 	get_key(&empty); //si no hay ningun elemento en el ring buffer devuelve un error
-	itoa(errno,buff);
 	write(1,"\nget_key checking:",strlen("\nget_key checking:"));
+	itoa(errno,buff);
 	write(1,buff,strlen(buff));
 	write(1,"//",strlen("//"));
 
@@ -62,8 +62,20 @@ int __attribute__ ((__section__(".text.main")))
 
 	//sys_put_screen TESTS
 	put_screen(empty); //si no hubiera control de lectura en el parametro, saltaria un page fault,
-	itoa(errno,buff); //como si que lo hay simplemente lo ignora
-	write(1,"\nput_screen checking:",strlen("\nput_screen checking:"));
+	write(1,"\nput_screen checking:",strlen("\nput_screen checking:")); //como si que lo hay simplemente lo ignora
+	itoa(errno,buff);
+	write(1,buff,strlen(buff));
+
+	//malloc TESTS
+	void* addr = malloc(1024);
+	write(1,"\nmalloc checking:",strlen("\nmalloc checking:"));
+	itoa(errno,buff);
+	write(1,buff,strlen(buff));
+	addr = malloc(10);
+	itoa(addr,buff);
+	write(1,buff,strlen(buff));
+	addr = malloc(10);
+	itoa(addr,buff);
 	write(1,buff,strlen(buff));
 
 	//START GAME:

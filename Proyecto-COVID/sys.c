@@ -258,15 +258,15 @@ int sys_put_screen(char *s){
 }
 
 void* sys_sbrk(int incr){
-  //incrementa la zona de memoria dinamica (heap)
-  //en incr bytes, reservando esta cantidad en sistema
-  //si el incremento es negativo libera esa cantidada (espacio de direcciones se modifica)
-  //devuelve la direccion de memoria a usar
-  //ERRORES: EAGAIN, ENOMEM
-  // if (incr==0) return (void*) brkp;
-  // void* free = (void*) brkp;
-  // brkp+=incr;
-  // if (incr>=endp) return NULL;
-  // return free;
+
+  struct task_struct* process=current();
+  void* heap_ptr=(void*)process->register_esp;
+  if (heap_ptr+incr<1024){
+    void *base=heap_ptr;
+    current()->register_esp+=incr;
+    return base;
+  }
+  return (void*)-ENOMEM; 
+  
 }
 

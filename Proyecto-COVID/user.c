@@ -46,18 +46,26 @@ void creartablero(char tablero[80][25]){
 int __attribute__ ((__section__(".text.main")))
   main(void)
 {
-	char *empty;
-	//sys_get_key tests
-	get_key(empty); //si no comprovamos que le pasamos un puntero inicializado daria un page fault
-	get_key(empty);
-	get_key(empty); //aunque se pidan más teclas que las que pueda haber en el ring buffer,
-					//sigue funcionando y simplemente lo ignora
+	write(1,"Syscalls checking:",strlen("Syscalls checking:"));
+	char empty;
+	int i;
+	//sys_get_key TESTS
+	i=get_key(&empty); //si no hay ningun elemento en el ring buffer devuelve un error (error=1|not error=0)
+	itoa(i,buff);
+	write(1,"\nget_key checking:",strlen("\nget_key checking:"));
+	write(1,buff,strlen(buff));
 
-	//sys_put_screen tests
-	put_screen(empty); //si no hubiera el control de paràmetros daria un page fault 
+	get_key(empty); //si no hubiera control de escritura en el parametro, saltaria un page fault,
+					//como si que lo hay simplemente lo ignora
+
+	//sys_put_screen TESTS
+	put_screen(empty); //si no hubiera control de lectura en el parametro, saltaria un page fault,
+					   //como si que lo hay simplemente lo ignora
 
 	char tablero[80][25]={{' '}};
 	creartablero(tablero);
+	write(1,"\nPRESS ANY KEY TO START!",strlen("\nPRESS ANY KEY TO START!"));
+	while (get_key(&empty)){} //
 	while(1) { 
 		tablero[posx][posy]=' ';
 		char direction;

@@ -241,9 +241,9 @@ int sys_get_stats(int pid, struct stats *st)
 
 extern struct ring_buffer keyboard_ring_buffer;
 int sys_get_key(char* c){
-  if (!access_ok(VERIFY_READ, c, 1)) return -EFAULT;
+  if (!access_ok(VERIFY_WRITE, c, sizeof(char))) return -EFAULT;
 	*c = ring_buffer_pop(&keyboard_ring_buffer);
-  return *c == '\0';
+  return *c=='\0';
 }
 
 int sys_put_screen(char *s){

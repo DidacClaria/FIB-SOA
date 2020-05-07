@@ -95,11 +95,11 @@ int __attribute__ ((__section__(".text.main")))
 	// write(1,"//",strlen("//"));
 
 	//START GAME:
-
+	// int thr=0;
 	char tablero[80][25]={{' '}};
 	creartablero(&tablero);
 	write(1,"\nPRESS ANY KEY TO START!",strlen("\nPRESS ANY KEY TO START!"));
-	while (get_key(&empty)){} //
+	while (get_key(&empty)){} 
 	while(1) { 
 		tablero[posx][posy]=' ';
 		char direction;
@@ -108,6 +108,11 @@ int __attribute__ ((__section__(".text.main")))
 		else if (direction=='s' && posx>=0 && posx<80 && posy+1>=0 && posy+1<25 && tablero[posx][posy+1]!='\10') ++posy;
 		else if (direction=='d'  && posx+1>=0 && posx+1<80 && posy>=0 && posy<25 && tablero[posx+1][posy]!='\10') ++posx;
 		else if (direction=='a' && posx-1>=0 && posx-1<80 && posy>=0 && posy<25 && tablero[posx-1][posy]!='\10') --posx;
+		// if (thr>=100){
+		// 	creartablero(&tablero);
+		// 	thr=0;
+		// }
+		// ++thr;
 		tablero[posx][posy]='A';
 		put_screen(&tablero);
 	}

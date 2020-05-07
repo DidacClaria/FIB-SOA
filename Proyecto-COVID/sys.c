@@ -257,15 +257,34 @@ int sys_put_screen(char *s){
   return 0;
 }
 
+void* heap_ptr=USER_ESP;
 void* sys_sbrk(int incr){
+  // page_table_entry *process_PT = get_PT(current());
+  // int num_pag=incr/4096,phy_pag,pag=0;
+  // while (pag!=num_pag){
+    // phy_pag=alloc_frame();
+    // if (phy_pag!=-1){
+      // set_ss_pag(process_PT, heap_ptr+pag, phy_pag);
+    // }
+  //   else {
+  //     for (int i=0; i<pag; i++)
+  //     {
+  //       free_frame(get_frame(process_PT, heap_ptr+i));
+  //       del_ss_pag(process_PT, heap_ptr+i);
+  //     }
+  //     return -ENOMEM;
+  //   }
+  //   ++pag;
+  // }
+  void* base_ptr=heap_ptr;
+  heap_ptr+=incr;
+  return base_ptr;
 
-  struct task_struct* process=current();
-  void* heap_ptr=(void*)process->register_esp;
-  if ((int)heap_ptr+incr<1024){
-    current()->register_esp+=incr;
-    return heap_ptr;
-  }
-  return (void*)-ENOMEM; 
+  // void* base_ptr=heap_ptr;
+  // // if ((int)base_ptr+incr){
+  //   heap_ptr+=incr;
+  //   return base_ptr;
+  // }
+  // return (void*)-ENOMEM; 
   
 }
-

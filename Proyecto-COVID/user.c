@@ -119,13 +119,13 @@ int __attribute__ ((__section__(".text.main")))
 	//esta syscall si que necesita una nueva página por lo que la alocata i incrementa el heap
 
 	addr= malloc(1024*4096);
-	itoa(addr,buff);
+	itoa(errno,buff);
 	write(1,buff,strlen(buff));
 	write(1,"//",strlen("//"));
 	//esta syscall devuelve un error (ENOMEM) ya que intenta pedir más memória de la que hay en total
 
 	addr= malloc(-1024*4096);
-	itoa(addr,buff);
+	itoa(errno,buff);
 	write(1,buff,strlen(buff));
 	write(1,"//",strlen("//"));
 	//esta syscall devuelve un error (EPERM) ya que no hay tantas páginas alocatadas en el heap

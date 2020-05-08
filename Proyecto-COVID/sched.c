@@ -199,6 +199,8 @@ void init_task1(void)
 
   init_stats(&c->p_stats);
 
+  c->heap_ptr=(PAG_LOG_INIT_DATA+NUM_PAG_DATA)*PAGE_SIZE;
+
   allocate_DIR(c);
 
   set_user_pages(c);

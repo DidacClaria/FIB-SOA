@@ -58,41 +58,77 @@ int __attribute__ ((__section__(".text.main")))
 	char empty;
 
 	//sys_get_key TESTS
-	get_key(&empty); //si no hay ningun elemento en el ring buffer devuelve un error
+	get_key(&empty);
 	write(1,"\nget_key checking:",strlen("\nget_key checking:"));
 	itoa(errno,buff);
 	write(1,buff,strlen(buff));
 	write(1,"//",strlen("//"));
+	//si no hay ningun elemento en el ring buffer devuelve un error
 
-	get_key(empty); //si no hubiera control de escritura en el parametro, saltaria un page fault,
-	itoa(errno,buff); //como si que lo hay simplemente lo ignora
-	write(1,buff,strlen(buff));
-
-	//sys_put_screen TESTS
-	put_screen(empty); //si no hubiera control de lectura en el parametro, saltaria un page fault,
-	write(1,"\nput_screen checking:",strlen("\nput_screen checking:")); //como si que lo hay simplemente lo ignora
+	get_key(empty);
 	itoa(errno,buff);
 	write(1,buff,strlen(buff));
+	//si no hubiera control de escritura en el parametro, saltaria un page fault,
+	//como si que lo hay simplemente lo ignora
+
+	//sys_put_screen TESTS
+	put_screen(empty); 
+	write(1,"\nput_screen checking:",strlen("\nput_screen checking:"));
+	itoa(errno,buff);
+	write(1,buff,strlen(buff));
+	//si no hubiera control de lectura en el parametro, saltaria un page fault,
+	//como si que lo hay simplemente lo ignora
 
 	//malloc TESTS	
-	// write(1,"\nmalloc checking:",strlen("\nmalloc checking:"));
-	// char* addr = malloc(4096*5);
-	// itoa(addr,buff);
-	// write(1,buff,strlen(buff));
-	// char screen[25][80];
-	// creartablero(screen);
-	// *(addr) = &screen;
-	// put_screen(&addr);
+	write(1,"\nmalloc checking:",strlen("\nmalloc checking:"));
+	char* addr=malloc(0);
+	itoa(addr,buff);
+	write(1,buff,strlen(buff)); 
+	write(1,"//",strlen("//"));
+	//esta syscall nos devolvera la direccion donde empieza el heap del proceso, ya que no se ha ejecutado otro malloc previamente
+	//por tanto el resultado que debemos ver por pantalla és (PAG_LOG_INIT_DATA+NUM_PAG_DATA)*PAGE_SIZE
 
-	// write(1,"//",strlen("//"));
-	// addr = malloc(25*80);
-	// itoa(addr,buff);
-	// write(1,buff,strlen(buff));
-	// write(1,"//",strlen("//"));
-	// addr = malloc(10);
-	// itoa(addr,buff);
-	// write(1,buff,strlen(buff));
-	// write(1,"//",strlen("//"));
+	addr = malloc(4096*5);
+	itoa(addr,buff);
+	write(1,buff,strlen(buff));
+	write(1,"//",strlen("//"));
+	//esta syscall nos allocata 5 páginas nuevas i nos incrementa el heap a base+4096*5
+	
+	addr = malloc(1);
+	itoa(addr,buff);
+	write(1,buff,strlen(buff));
+	write(1,"//",strlen("//"));
+	//esta syscall alocata una página nueva i nos incrementa el heap en 1 ya que estamos en el inicio de una nueva pagina
+
+	addr = malloc(-20);
+	itoa(addr,buff);
+	write(1,buff,strlen(buff));
+	write(1,"//",strlen("//"));
+	//esta syscall libera una página i decrementa el heap en 20
+
+	addr = malloc(10);
+	itoa(addr,buff);
+	write(1,buff,strlen(buff));
+	write(1,"//",strlen("//"));
+	//esta syscall no necesita una nueva página por lo que solo incrementa el heap
+
+	addr = malloc(25*80);
+	itoa(addr,buff);
+	write(1,buff,strlen(buff));
+	write(1,"//",strlen("//"));	
+	//esta syscall si que necesita una nueva página por lo que la alocata i incrementa el heap
+
+	addr= malloc(1024*4096);
+	itoa(addr,buff);
+	write(1,buff,strlen(buff));
+	write(1,"//",strlen("//"));
+	//esta syscall devuelve un error (ENOMEM) ya que intenta pedir más memória de la que hay en total
+
+	addr= malloc(-1024*4096);
+	itoa(addr,buff);
+	write(1,buff,strlen(buff));
+	write(1,"//",strlen("//"));
+	//esta syscall devuelve un error (EPERM) ya que no hay tantas páginas alocatadas en el heap
 
 	//START GAME:
 	// int thr=0;

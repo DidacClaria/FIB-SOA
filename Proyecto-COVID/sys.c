@@ -257,34 +257,57 @@ int sys_put_screen(char *s){
   return 0;
 }
 
-void* heap_ptr=USER_ESP;
 void* sys_sbrk(int incr){
-  // page_table_entry *process_PT = get_PT(current());
-  // int num_pag=incr/4096,phy_pag,pag=0;
-  // while (pag!=num_pag){
-    // phy_pag=alloc_frame();
-    // if (phy_pag!=-1){
-      // set_ss_pag(process_PT, heap_ptr+pag, phy_pag);
-    // }
-  //   else {
-  //     for (int i=0; i<pag; i++)
-  //     {
-  //       free_frame(get_frame(process_PT, heap_ptr+i));
-  //       del_ss_pag(process_PT, heap_ptr+i);
-  //     }
-  //     return -ENOMEM;
-  //   }
-  //   ++pag;
-  // }
-  void* base_ptr=heap_ptr;
-  heap_ptr+=incr;
-  return base_ptr;
-
-  // void* base_ptr=heap_ptr;
-  // // if ((int)base_ptr+incr){
-  //   heap_ptr+=incr;
-  //   return base_ptr;
-  // }
-  // return (void*)-ENOMEM; 
-  
+  void* base_ptr=current()->heap_ptr;
+  page_table_entry *current_PT = get_PT(current());
+  int num_pag, new_pag, page_count=0;
+  if (incr==0) return base_ptr;
+  else if (incr>0){
+      if (((int)base_ptr+incr)*PAGE_SIZE<TOTAL_PAGES && ((int)base_ptr&0x00FFFF)%PAGE_SIZE==0 || incr>=PAGE_SIZE || ((int)base_ptr%PAGE_SIZE)>=(((int)base_ptr+incr)%PAGE_SIZE)){
+        //RESERVAR PAGINAS I INCREMENTAR HEAP
+        num_pag=(incr+4096-1)/4096; //to round up the number of pages
+        while (page_count!=num_pag){
+          new_pag=alloc_frame();
+          if (new_pag!=-1){
+            set_ss_pag(current_PT, base_ptr+page_count, new_pag);
+          }
+          else {
+            for (int i=0; i<page_count; i++)
+            {
+              free_frame(get_frame(current_PT, base_ptr+i));
+              del_ss_pag(current_PT, base_ptr+i);
+            }
+            return -ENOMEM;
+          }
+          ++page_count;
+        }
+        current()->heap_ptr+=incr;
+        return base_ptr;
+      }
+      else if (((int)base_ptr+incr)*PAGE_SIZE<TOTAL_PAGES){
+          //INCREMENTAR EL HEAP
+          current()->heap_ptr+=incr;
+          return base_ptr;
+      }
+      else return -ENOMEM;
+  }
+  else {
+      if (((int)base_ptr+incr)>=(PAG_LOG_INIT_DATA+NUM_PAG_DATA) && (incr*-1)>=PAGE_SIZE || ((int)base_ptr%PAGE_SIZE)<(((int)base_ptr+incr)%PAGE_SIZE)){
+        //LIBERAR PAGINAS I DECREMENTAR HEAP
+        num_pag=((incr*-1)+4096-1)/4096; //to round up the number of pages
+        while (page_count!=num_pag){
+          free_frame(get_frame(current_PT, base_ptr+page_count));
+          del_ss_pag(current_PT, base_ptr+page_count);
+          ++page_count;
+        }
+        current()->heap_ptr+=incr;
+        return current()->heap_ptr;
+      }
+      else if (((int)base_ptr+incr)*PAGE_SIZE>=(PAG_LOG_INIT_DATA+NUM_PAG_DATA)*PAGE_SIZE){
+          //DECREMENTAR EL HEAP
+          current()->heap_ptr+=incr;
+          return current()->heap_ptr;
+      }
+      else return -EPERM;
+  }  
 }

@@ -281,8 +281,6 @@ void* sys_sbrk(int incr){
           }
           ++page_count;
         }
-        // int actual_ptr=(int)base_ptr+incr;
-        // current()->heap_ptr+=(void*)actual_ptr;
         current()->heap_ptr+=incr;
         return base_ptr;
       }
@@ -294,7 +292,7 @@ void* sys_sbrk(int incr){
       else return -ENOMEM;
   }
   else {
-      if (((int)base_ptr+incr)>=(PAG_LOG_INIT_DATA+NUM_PAG_DATA)*PAGE_SIZE && (incr*-1)>=PAGE_SIZE || ((int)base_ptr%PAGE_SIZE)<(((int)base_ptr+incr)%PAGE_SIZE)){
+      if (((int)base_ptr+incr)>=(PAG_LOG_INIT_DATA+NUM_PAG_DATA)*PAGE_SIZE && ((incr*-1)>=PAGE_SIZE || ((int)base_ptr%PAGE_SIZE)<(((int)base_ptr+incr)%PAGE_SIZE))){
         //LIBERAR PAGINAS I DECREMENTAR HEAP
         num_pag=((incr*-1)+4096-1)/4096; //to round up the number of pages
         while (page_count<num_pag){

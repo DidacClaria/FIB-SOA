@@ -130,6 +130,13 @@ int __attribute__ ((__section__(".text.main")))
 	write(1,"//",strlen("//"));
 	//esta syscall devuelve un error (EPERM) ya que no hay tantas páginas alocatadas en el heap
 
+	addr=malloc(-4096*5); 
+	addr=malloc(-(25*80-9));
+	itoa(addr,buff);
+	write(1,buff,strlen(buff));
+	write(1,"//",strlen("//"));
+	//volvemos a estar como antes de los juegos de prueba
+
 	//START GAME:
 	// int thr=0;
 	char tablero[80][25]={{' '}};

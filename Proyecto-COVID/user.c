@@ -137,8 +137,11 @@ int __attribute__ ((__section__(".text.main")))
 	write(1,"//",strlen("//"));
 	//volvemos a estar como antes de los juegos de prueba
 
+	char* screen2=(char*)malloc(25*80);
+	for (int i=0; i<2000; ++i) screen2[i]='E';
+	put_screen(screen2);
+
 	//START GAME:
-	// int thr=0;
 	char tablero[80][25]={{' '}};
 	creartablero(&tablero);
 	write(1,"\nPRESS ANY KEY TO START!",strlen("\nPRESS ANY KEY TO START!"));
@@ -151,11 +154,6 @@ int __attribute__ ((__section__(".text.main")))
 		else if (direction=='s' && posx>=0 && posx<80 && posy+1>=0 && posy+1<25 && tablero[posx][posy+1]!='\10') ++posy;
 		else if (direction=='d'  && posx+1>=0 && posx+1<80 && posy>=0 && posy<25 && tablero[posx+1][posy]!='\10') ++posx;
 		else if (direction=='a' && posx-1>=0 && posx-1<80 && posy>=0 && posy<25 && tablero[posx-1][posy]!='\10') --posx;
-		// if (thr>=100){
-		// 	creartablero(&tablero);
-		// 	thr=0;
-		// }
-		// ++thr;
 		tablero[posx][posy]='A';
 		put_screen(&tablero);
 	}

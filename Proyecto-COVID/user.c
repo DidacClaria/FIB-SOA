@@ -35,20 +35,22 @@ char* obstaculos[23]={
 };
 
 int get_rand(int seed){
-	if (seed%2)	return (gettime()*seed+3)%23;
-	return 4123124*seed%23;
+	int time=gettime();
+	if (time==-1) return -seed;
+	if (seed%2)	return (time+seed+3)%20;
+	return (4123124+seed)%50;
 }
 
 void creartablero(char *tablero){
-	int rand;
-	for (int i=3; i<79; i+=5){
+	int time,rand=(int)tablero&0xFFFFFF;
+	for (int i=3; i<79; i+=6){
 		rand=get_rand(rand);
 		for (int j=0; j<25; ++j){
-			tablero[i*25+j]=obstaculos[(rand*gettime())%23][j];
+			tablero[i*25+j]=obstaculos[rand%23][j];
 		}
 	}
-	if (cambio==1) tablero[79*25+(rand*gettime())%23]='\3';
-	else tablero[0*25+(rand*gettime())%23]='\3';
+	if (cambio==1) tablero[78*25+rand%25]='\3';
+	else tablero[0*25+rand%25]='\3';
 }
 
 int __attribute__ ((__section__(".text.main")))
@@ -138,7 +140,7 @@ int __attribute__ ((__section__(".text.main")))
 	//volvemos a estar como antes de los juegos de prueba
 
 	char* screen2=(char*)malloc(25*80);
-	for (int i=0; i<2000; ++i) screen2[i]='E';
+	creartablero(screen2);
 	put_screen(screen2);
 
 	//START GAME:

@@ -53,6 +53,10 @@ void creartablero(char *tablero){
 	else tablero[0*25+rand%25]='\3';
 }
 
+void asignartablero(char* old, char* new){
+	for (int i=0; i<2000; ++i) old[i]=new[i];
+}
+
 int __attribute__ ((__section__(".text.main")))
   main(void)
 {
@@ -141,10 +145,16 @@ int __attribute__ ((__section__(".text.main")))
 
 	char* screen2=(char*)malloc(25*80);
 	creartablero(screen2);
-	put_screen(screen2);
+	char* screen3=(char*)malloc(25*80);
+	creartablero(screen3);
+	char* screen4=(char*)malloc(25*80);
+	creartablero(screen4);
+	char* screen5=(char*)malloc(25*80);
+	creartablero(screen5);
 
 	//START GAME:
-	char tablero[80][25]={{' '}};
+	int thr=10,num=0;
+	char tablero[80][25];
 	creartablero(&tablero);
 	write(1,"\nPRESS ANY KEY TO START!",strlen("\nPRESS ANY KEY TO START!"));
 	while (get_key(&empty)){} 
@@ -158,5 +168,15 @@ int __attribute__ ((__section__(".text.main")))
 		else if (direction=='a' && posx-1>=0 && posx-1<80 && posy>=0 && posy<25 && tablero[posx-1][posy]!='\10') --posx;
 		tablero[posx][posy]='A';
 		put_screen(&tablero);
+
+		if (gettime()>thr){
+			thr+=10;
+			if (num==0) asignartablero(&tablero,screen2);
+			else if (num==1) asignartablero(&tablero,screen3);
+			else if (num==2) asignartablero(&tablero,screen4);
+			else asignartablero(&tablero,screen5);
+			num++;
+			num=num%3;
+		}
 	}
 }

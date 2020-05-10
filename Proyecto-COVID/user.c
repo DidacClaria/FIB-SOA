@@ -9,7 +9,7 @@ int posx=0, posy=13, cambio=1;
 // }
 
 char* obstaculos[23]={
-	"  \10\10\10\10\10\10\10\10\10\10\11\12\13\14\10\10\10\10\10\10\10\10\10",
+	"  \10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10",
 	"\10  \10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10",
 	"\10\10\10  \10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10",
 	"\10\10\10\10  \10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10\10",
@@ -35,10 +35,9 @@ char* obstaculos[23]={
 };
 
 int get_rand(int seed){
-	int time=gettime();
-	if (time==-1) return -seed;
-	if (seed%2)	return (time+seed+3)%20;
-	return (4123124+seed)%50;
+	seed=(int)seed&0xFFFFFF;
+	if (seed%2)	return (seed*3+5)%0xFFFFFF;
+	return ((seed+1)*2)%0xFFFFFF;
 }
 
 void creartablero(char *tablero){
@@ -49,8 +48,6 @@ void creartablero(char *tablero){
 			tablero[i*25+j]=obstaculos[rand%23][j];
 		}
 	}
-	if (cambio==1) tablero[78*25+rand%25]='\3';
-	else tablero[0*25+rand%25]='\3';
 }
 
 void asignartablero(char* old, char* new){
@@ -153,30 +150,44 @@ int __attribute__ ((__section__(".text.main")))
 	creartablero(screen5);
 
 	//START GAME:
-	int thr=10,num=0;
+	int thr=18*2,num=0, rand=get_rand(rand);
 	char tablero[80][25];
 	creartablero(&tablero);
 	write(1,"\nPRESS ANY KEY TO START!",strlen("\nPRESS ANY KEY TO START!"));
 	while (get_key(&empty)){} 
 	while(1) { 
+		if (cambio==1) tablero[78][rand%25]='\3';
+		else tablero[1][rand%25]='\3';
 		tablero[posx][posy]=' ';
 		char direction;
 		get_key(&direction);
-		if (direction=='w' && posx>=0 && posx<80 && posy-1>=0 && posy-1<25 && tablero[posx][posy-1]!='\10') --posy;
-		else if (direction=='s' && posx>=0 && posx<80 && posy+1>=0 && posy+1<25 && tablero[posx][posy+1]!='\10') ++posy;
-		else if (direction=='d'  && posx+1>=0 && posx+1<80 && posy>=0 && posy<25 && tablero[posx+1][posy]!='\10') ++posx;
-		else if (direction=='a' && posx-1>=0 && posx-1<80 && posy>=0 && posy<25 && tablero[posx-1][posy]!='\10') --posx;
+		if (direction=='w' && posx>=0 && posx<80 && posy-1>=0 && posy-1<25 && tablero[posx][posy-1]!='\10'){
+			if (tablero[posx][posy-1]=='\3') cambio=!cambio;
+			--posy;
+		} 
+		else if (direction=='s' && posx>=0 && posx<80 && posy+1>=0 && posy+1<25 && tablero[posx][posy+1]!='\10'){
+			if (tablero[posx][posy+1]=='\3') cambio=!cambio;
+			++posy;
+		} 
+		else if (direction=='d'  && posx+1>=0 && posx+1<80 && posy>=0 && posy<25 && tablero[posx+1][posy]!='\10'){
+			if (tablero[posx+1][posy]=='\3') cambio=!cambio;
+			++posx;
+		} 
+		else if (direction=='a' && posx-1>=0 && posx-1<80 && posy>=0 && posy<25 && tablero[posx-1][posy]!='\10'){
+			if (tablero[posx-1][posy]=='\3') cambio=!cambio;
+			--posx;
+		} 
 		tablero[posx][posy]='A';
 		put_screen(&tablero);
-
-		if (gettime()>thr){
-			thr+=10;
-			if (num==0) asignartablero(&tablero,screen2);
-			else if (num==1) asignartablero(&tablero,screen3);
-			else if (num==2) asignartablero(&tablero,screen4);
+		++thr;
+		if (thr>=18*2){
+			thr=0;
+			if (num==1) asignartablero(&tablero,screen2);
+			else if (num==2) asignartablero(&tablero,screen3);
+			else if (num==3) asignartablero(&tablero,screen4);
 			else asignartablero(&tablero,screen5);
 			num++;
-			num=num%3;
+			num=num%4;
 		}
 	}
 }

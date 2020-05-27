@@ -199,7 +199,7 @@ void init_task1(void)
 
   init_stats(&c->p_stats);
 
-  c->heap_ptr=(PAG_LOG_INIT_DATA+NUM_PAG_DATA)*PAGE_SIZE;
+  c->heap_ptr=(void*)((PAG_LOG_INIT_DATA+NUM_PAG_DATA)*PAGE_SIZE);
 
   allocate_DIR(c);
 

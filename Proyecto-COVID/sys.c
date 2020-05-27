@@ -242,13 +242,16 @@ int sys_get_stats(int pid, struct stats *st)
 extern struct ring_buffer keyboard_ring_buffer;
 int sys_get_key(char* c){
   if (!access_ok(VERIFY_WRITE, c, sizeof(char))) return -EFAULT;
-	*c = ring_buffer_pop(&keyboard_ring_buffer);
-  if (*c=='\0') return -ENOKEY;
+	char key = ring_buffer_pop(&keyboard_ring_buffer);
+  copy_to_user(&key,c,sizeof(char));
+  if (key=='\0') return -ENOKEY;
   return 0;
 }
 
 int sys_put_screen(char *s){
   if (!access_ok(VERIFY_READ, s, 25*80)) return -EFAULT;
+  char mat[80][25];
+  if (copy_from_user(s,&mat,80*25)==-1) return -EPERM;
 	for (int i = 0; i < 80; ++i){
 		for (int j = 0; j < 25; ++j){
 			printc_xy(i, j, s[i*25+j]);
@@ -263,7 +266,7 @@ void* sys_sbrk(int incr){
   int num_pag, new_pag, page_count=0;
   if (incr==0) return base_ptr;
   else if (incr>0){
-      if (((int)base_ptr+incr)/PAGE_SIZE<TOTAL_PAGES && ((int)base_ptr&0x00FFFF)%PAGE_SIZE==0 || incr>=PAGE_SIZE || ((int)base_ptr%PAGE_SIZE)>=(((int)base_ptr+incr)%PAGE_SIZE)){
+      if ((((int)base_ptr+incr)/PAGE_SIZE<TOTAL_PAGES && ((int)base_ptr&0x00FFFF)%PAGE_SIZE==0) || (incr>=PAGE_SIZE) || ((int)base_ptr%PAGE_SIZE)>=(((int)base_ptr+incr)%PAGE_SIZE)){
         //RESERVAR PAGINAS I INCREMENTAR HEAP
         num_pag=(incr+4096-1)/4096; //to round up the number of pages
         while (page_count<num_pag){
@@ -277,7 +280,7 @@ void* sys_sbrk(int incr){
               free_frame(get_frame(current_PT, (int)base_ptr/PAGE_SIZE+i));
               del_ss_pag(current_PT, (int)base_ptr/PAGE_SIZE+i);
             }
-            return -ENOMEM;
+            return (void*)-ENOMEM;
           }
           ++page_count;
         }
@@ -289,7 +292,7 @@ void* sys_sbrk(int incr){
           current()->heap_ptr+=incr;
           return base_ptr;
       }
-      else return -ENOMEM;
+      else return (void*)-ENOMEM;
   }
   else {
       if (((int)base_ptr+incr)>=(PAG_LOG_INIT_DATA+NUM_PAG_DATA)*PAGE_SIZE && ((incr*-1)>=PAGE_SIZE || ((int)base_ptr%PAGE_SIZE)<(((int)base_ptr+incr)%PAGE_SIZE))){
@@ -308,6 +311,6 @@ void* sys_sbrk(int incr){
           current()->heap_ptr+=incr;
           return current()->heap_ptr;
       }
-      else return -EPERM;
+      else return (void*)-EPERM;
   }  
 }

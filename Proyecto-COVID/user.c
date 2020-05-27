@@ -41,7 +41,7 @@ int get_rand(int seed){
 }
 
 void creartablero(char *tablero){
-	int time,rand=(int)tablero&0xFFFFFF;
+	int rand=(int)tablero&0xFFFFFF;
 	for (int i=3; i<79; i+=6){
 		rand=get_rand(rand);
 		for (int j=0; j<25; ++j){
@@ -85,38 +85,38 @@ int __attribute__ ((__section__(".text.main")))
 	//malloc TESTS	
 	write(1,"\nmalloc checking:",strlen("\nmalloc checking:"));
 	char* addr=malloc(0);
-	itoa(addr,buff);
+	itoa((int)addr,buff);
 	write(1,buff,strlen(buff)); 
 	write(1,"//",strlen("//"));
 	//esta syscall nos devolvera la direccion donde empieza el heap del proceso, ya que no se ha ejecutado otro malloc previamente
 	//por tanto el resultado que debemos ver por pantalla és (PAG_LOG_INIT_DATA+NUM_PAG_DATA)*PAGE_SIZE
 
 	addr = malloc(4096*5);
-	itoa(addr,buff);
+	itoa((int)addr,buff);
 	write(1,buff,strlen(buff));
 	write(1,"//",strlen("//"));
 	//esta syscall nos allocata 5 páginas nuevas i nos incrementa el heap a base+4096*5
 	
 	addr = malloc(1);
-	itoa(addr,buff);
+	itoa((int)addr,buff);
 	write(1,buff,strlen(buff));
 	write(1,"//",strlen("//"));
 	//esta syscall alocata una página nueva i nos incrementa el heap en 1 ya que estamos en el inicio de una nueva pagina
 
 	addr = malloc(-20);
-	itoa(addr,buff);
+	itoa((int)addr,buff);
 	write(1,buff,strlen(buff));
 	write(1,"//",strlen("//"));
 	//esta syscall libera una página i decrementa el heap en 20
 
 	addr = malloc(10);
-	itoa(addr,buff);
+	itoa((int)addr,buff);
 	write(1,buff,strlen(buff));
 	write(1,"//",strlen("//"));
 	//esta syscall no necesita una nueva página por lo que solo incrementa el heap
 
 	addr = malloc(25*80);
-	itoa(addr,buff);
+	itoa((int)addr,buff);
 	write(1,buff,strlen(buff));
 	write(1,"//",strlen("//"));	
 	//esta syscall si que necesita una nueva página por lo que la alocata i incrementa el heap
@@ -135,7 +135,7 @@ int __attribute__ ((__section__(".text.main")))
 
 	addr=malloc(-4096*5); 
 	addr=malloc(-(25*80-9));
-	itoa(addr,buff);
+	itoa((int)addr,buff);
 	write(1,buff,strlen(buff));
 	write(1,"//",strlen("//"));
 	//volvemos a estar como antes de los juegos de prueba
@@ -150,7 +150,8 @@ int __attribute__ ((__section__(".text.main")))
 	creartablero(screen5);
 
 	//START GAME:
-	int thr=18*2,num=0, rand=get_rand(rand);
+	int thr=18*2,num=0,rand;
+	rand=get_rand(&rand);
 	char tablero[80][25];
 	creartablero(&tablero);
 	write(1,"\nPRESS ANY KEY TO START!",strlen("\nPRESS ANY KEY TO START!"));

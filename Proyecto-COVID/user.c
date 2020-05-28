@@ -84,13 +84,17 @@ int __attribute__ ((__section__(".text.main")))
 
 	char fps_screen[80][25];
 	int n_put_screens=0;
+	int time=gettime();
 	while(1){
 		++n_put_screens;
 		put_screen(&fps_screen);
-		int time=gettime();
-		time=n_put_screens/time;
-		itoa(time,buff);
-		write(1,buff,strlen(buff));
+		int actual_time=gettime();
+		if (time+18<=actual_time){
+			time=actual_time;
+			itoa(n_put_screens,buff);
+			write(1,buff,strlen(buff));
+			n_put_screens=0;
+		}
 	}
 
 	//malloc TESTS	

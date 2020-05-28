@@ -1,6 +1,6 @@
 #include <utils.h>
 #include <types.h>
-
+#include <sched.h>
 #include <mm_address.h>
 
 void copy_data(void *start, void *dest, int size)
@@ -64,6 +64,8 @@ int copy_to_user(void *start, void *dest, int size)
  */
 int access_ok(int type, const void * addr, unsigned long size)
 {
+  void* heap = current()->heap_ptr;
+  unsigned long pag_heap=(unsigned long)heap>>12;
   unsigned long addr_ini, addr_fin;
 
   addr_ini=(((unsigned long)addr)>>12);
@@ -75,11 +77,11 @@ int access_ok(int type, const void * addr, unsigned long size)
     case VERIFY_WRITE:
       /* Should suppose no support for automodifyable code */
       if ((addr_ini>=USER_FIRST_PAGE+NUM_PAG_CODE)&&
-          (addr_fin<=USER_FIRST_PAGE+NUM_PAG_CODE+NUM_PAG_DATA))
+          (addr_fin<=pag_heap))
 	  return 1;
     default:
       if ((addr_ini>=USER_FIRST_PAGE)&&
-  	(addr_fin<=(USER_FIRST_PAGE+NUM_PAG_CODE+NUM_PAG_DATA)))
+  	(addr_fin<=(pag_heap)))
           return 1;
   }
   return 0;

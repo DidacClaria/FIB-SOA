@@ -241,7 +241,7 @@ int sys_get_stats(int pid, struct stats *st)
 
 extern struct ring_buffer keyboard_ring_buffer;
 int sys_get_key(char* c){
-  if (!access_ok(VERIFY_WRITE, c, sizeof(char))) return -EFAULT;
+  if (!access_ok(VERIFY_READ, c, sizeof(char))) return -EFAULT;
 	char key = ring_buffer_pop(&keyboard_ring_buffer);
   copy_to_user(&key,c,sizeof(char));
   if (key=='\0') return -ENOKEY;

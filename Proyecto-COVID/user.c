@@ -82,6 +82,17 @@ int __attribute__ ((__section__(".text.main")))
 	//si no hubiera control de lectura en el parametro, saltaria un page fault,
 	//como si que lo hay simplemente lo ignora
 
+	char fps_screen[80][25];
+	int n_put_screens=0;
+	while(1){
+		++n_put_screens;
+		put_screen(&fps_screen);
+		int time=gettime();
+		time=n_put_screens/time;
+		itoa(time,buff);
+		write(1,buff,strlen(buff));
+	}
+
 	//malloc TESTS	
 	write(1,"\nmalloc checking:",strlen("\nmalloc checking:"));
 	char* addr=malloc(0);
@@ -181,7 +192,7 @@ int __attribute__ ((__section__(".text.main")))
 		tablero[posx][posy]='A';
 		put_screen(&tablero);
 		++thr;
-		if (thr>=18*2){
+		if (thr>=18){
 			thr=0;
 			if (num==1) asignartablero(&tablero,screen2);
 			else if (num==2) asignartablero(&tablero,screen3);

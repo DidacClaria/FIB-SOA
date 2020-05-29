@@ -81,7 +81,7 @@ int access_ok(int type, const void * addr, unsigned long size)
 	  return 1;
     default:
       if ((addr_ini>=USER_FIRST_PAGE)&&
-  	(addr_fin<=(pag_heap)))
+  	(addr_fin<=pag_heap))
           return 1;
   }
   return 0;

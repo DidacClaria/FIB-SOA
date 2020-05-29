@@ -57,38 +57,56 @@ void asignartablero(char* old, char* new){
 int __attribute__ ((__section__(".text.main")))
   main(void)
 {
-	write(1,"Syscalls checking:",strlen("Syscalls checking:"));
+	char test_screen[80][20];
+	put_screen(&test_screen);
+	write(1,"Syscalls checking (press any key to execute tests):",strlen("Syscalls checking (press any key to execute tests):"));
 	char empty;
 
 	//sys_get_key TESTS
-	get_key(&empty);
 	write(1,"\nget_key checking:",strlen("\nget_key checking:"));
+	write(1,"\nSi no hay ningun elemento en el ring buffer devuelve un error (-ENOKEY == 126):\n",strlen("\nSi no hay ningun elemento en el ring buffer devuelve un error (-ENOKEY == 126):\n"));
+	while (get_key(&empty)){} 
+	get_key(&empty);
 	itoa(errno,buff);
 	write(1,buff,strlen(buff));
-	write(1,"//",strlen("//"));
-	//si no hay ningun elemento en el ring buffer devuelve un error
+	write(1,"\n",strlen("\n"));
 
+	write(1,"\nSi no hubiera control de escritura en el parametro, saltaria un page fault, como si que lo hay devuelve un error (-EFAULT == 14):\n",strlen("\nSi no hubiera control de escritura en el parametro, saltaria un page fault, como si que lo hay devuelve un error (-EFAULT == 14):\n"));
+	while (get_key(&empty)){} 
 	get_key(empty);
 	itoa(errno,buff);
 	write(1,buff,strlen(buff));
-	//si no hubiera control de escritura en el parametro, saltaria un page fault,
-	//como si que lo hay simplemente lo ignora
+	write(1,"\n",strlen("\n"));
 
+	write(1,"\nEsperamos a que mediante la interrupcion de teclado se anada una tecla al ring buffer y la printamos por pantalla:\n",strlen("\nEsperamos a que mediante la interrupcion de teclado se anada una tecla al ring buffer y la printamos por pantalla:\n"));
+	while (get_key(&empty)){} 
+	write(1,&empty,1);
+	write(1,"\n",strlen("\n"));
+	
 	//sys_put_screen TESTS
-	put_screen(empty); 
 	write(1,"\nput_screen checking:",strlen("\nput_screen checking:"));
+	write(1,"\nSi no hubiera control de lectura en el parametro, saltaria un page fault, como si que lo hay devuelve un error (-EFAULT == 14):\n",strlen("\nSi no hubiera control de lectura en el parametro, saltaria un page fault, como si que lo hay devuelve un error (-EFAULT == 14):\n"));
+	while (get_key(&empty)){} 
+	put_screen(empty); 
 	itoa(errno,buff);
 	write(1,buff,strlen(buff));
-	//si no hubiera control de lectura en el parametro, saltaria un page fault,
-	//como si que lo hay simplemente lo ignora
+	write(1,"\n",strlen("\n"));
 
+	write(1,"\nAhora comprovaremos si imprime un tablero generado pseudo-aleatoriamente: ",strlen("\nAhora comprovaremos si imprime un tablero generado pseudo-aleatoriamente: "));
+	creartablero(&test_screen);
+	while (get_key(&empty)){} 
+	put_screen(&test_screen);
+
+	// MAX FPS CHECKING
 	// char fps_screen[80][25];
 	// creartablero(&fps_screen);
 	// int n_put_screens=0;
 	// int time=gettime();
 	// while(1){
-	// 	++n_put_screens;
-	// 	put_screen(&fps_screen);
+	// 	if (n_put_screens<=30){
+	// 		++n_put_screens;
+	// 		put_screen(&fps_screen);
+	// 	}
 	// 	int actual_time=gettime();
 	// 	if (time+18<=actual_time){
 	// 		time=actual_time;
@@ -99,6 +117,7 @@ int __attribute__ ((__section__(".text.main")))
 	// }
 
 	//malloc TESTS	
+	while (get_key(&empty)){} 
 	write(1,"\nmalloc checking:",strlen("\nmalloc checking:"));
 	char* addr=malloc(0);
 	itoa((int)addr,buff);
@@ -166,7 +185,8 @@ int __attribute__ ((__section__(".text.main")))
 	creartablero(screen5);
 
 	//START GAME:
-	int thr=18*2,num=0,rand;
+	int num=0,rand;
+	int n_put_screens=0, time=gettime(), actual_time;
 	rand=get_rand(&rand);
 	char tablero[80][25];
 	creartablero(&tablero);
@@ -195,10 +215,14 @@ int __attribute__ ((__section__(".text.main")))
 			--posx;
 		} 
 		tablero[posx][posy]='A';
-		put_screen(&tablero);
-		++thr;
-		if (thr>=18*4){
-			thr=0;
+		if (n_put_screens<=180){
+			++n_put_screens;
+			put_screen(&tablero);
+		}
+		actual_time=gettime();
+		if (time+18<=actual_time){
+			time=actual_time;
+			n_put_screens=0;
 			if (num==1) asignartablero(&tablero,screen2);
 			else if (num==2) asignartablero(&tablero,screen3);
 			else if (num==3) asignartablero(&tablero,screen4);

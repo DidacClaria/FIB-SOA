@@ -250,11 +250,15 @@ int sys_get_key(char* c){
 
 int sys_put_screen(char *s){
   if (!access_ok(VERIFY_READ, s, 25*80)) return -EFAULT;
-  char mat[80][25];
-  if (copy_from_user(s,&mat,80*25)==-1) return -EPERM;
+  char mat[2000];
+  if (copy_from_user(s,&mat,2000)==-1) return -EPERM;
 	for (int i = 0; i < 80; ++i){
 		for (int j = 0; j < 25; ++j){
-			printc_xy(i, j, s[i*25+j]);
+			// printc_xy(i, j, mat[i*25+j]);
+      __asm__ __volatile__ ( "movb %0, %%al; outb $0xe9" ::"a"(mat[i*25+j]));
+      Word ch = (Word) (mat[i*25+j] & 0x00FF) | 0x0200;
+      DWord screen = 0xb8000 + (j * 80 + i) * 2;
+      asm("movw %0, (%1)" : : "g"(ch), "g"(screen));
     }
   }
   return 0;

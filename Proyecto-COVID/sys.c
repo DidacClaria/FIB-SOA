@@ -1,4 +1,4 @@
-/*
+ /*
  * sys.c - Syscalls implementation
  */
 #include <devices.h>
